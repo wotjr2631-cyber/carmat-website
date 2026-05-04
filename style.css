@@ -329,13 +329,19 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 }
 
 .product-img-1 {
-  background: linear-gradient(135deg, #2d2d2d 0%, #4a4a4a 100%);
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.35) 100%),
+    url('images/product-standard.jpg') center/cover no-repeat;
 }
 .product-img-2 {
-  background: linear-gradient(135deg, #3a3a3a 0%, #1a1a1a 100%);
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.4) 100%),
+    url('images/product-custom.jpg') center/cover no-repeat;
 }
 .product-img-3 {
-  background: linear-gradient(135deg, #4a4a4a 0%, #2a3a2a 100%);
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.25) 100%),
+    url('images/product-eco.jpg') center/cover no-repeat;
 }
 
 .product-img::after {
