@@ -1,5 +1,96 @@
 'use strict';
 
+// ===== 3D MAT MOUSE TRACKING =====
+const mat3d    = document.getElementById('mat-3d');
+const matGlare = document.getElementById('mat-glare');
+const matShadow = document.getElementById('mat-shadow');
+
+if (mat3d) {
+  const BASE_X = 18;   // 기본 X 기울기 (위에서 내려다보는 각도)
+  const BASE_Y = -14;  // 기본 Y 기울기
+  const MAX_TILT = 22; // 최대 기울기 각도
+
+  let targetX = BASE_X, targetY = BASE_Y;
+  let currentX = BASE_X, currentY = BASE_Y;
+  let rafId = null;
+  let isHovered = false;
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function animateMat() {
+    const speed = isHovered ? 0.12 : 0.06;
+    currentX = lerp(currentX, targetX, speed);
+    currentY = lerp(currentY, targetY, speed);
+
+    mat3d.style.transform = `rotateX(${currentX}deg) rotateY(${currentY}deg)`;
+
+    // 그림자: 기울기에 따라 위치/흐림 변화
+    const shadowBlur = 8 + Math.abs(currentY) * 0.4;
+    const shadowX = currentY * 1.2;
+    if (matShadow) {
+      matShadow.style.transform = `translateX(calc(-50% + ${shadowX}px))`;
+      matShadow.style.filter = `blur(${shadowBlur}px)`;
+    }
+
+    const diff = Math.abs(currentX - targetX) + Math.abs(currentY - targetY);
+    if (diff > 0.05) {
+      rafId = requestAnimationFrame(animateMat);
+    } else {
+      rafId = null;
+    }
+  }
+
+  function startAnim() {
+    if (!rafId) rafId = requestAnimationFrame(animateMat);
+  }
+
+  // 마우스가 hero 영역 위에 있을 때 전체 섹션 기준으로 트래킹
+  const heroSection = document.getElementById('hero');
+
+  heroSection.addEventListener('mousemove', (e) => {
+    isHovered = true;
+    const rect = heroSection.getBoundingClientRect();
+    // -1 ~ 1 범위로 정규화
+    const nx = (e.clientX - rect.left) / rect.width  * 2 - 1;
+    const ny = (e.clientY - rect.top)  / rect.height * 2 - 1;
+
+    targetY = BASE_Y + nx * MAX_TILT;
+    targetX = BASE_X - ny * MAX_TILT * 0.7;
+
+    // 광택 위치 업데이트
+    if (matGlare) {
+      const gx = 30 + nx * 25;
+      const gy = 25 + ny * 20;
+      matGlare.style.background =
+        `radial-gradient(ellipse 60% 40% at ${gx}% ${gy}%, rgba(255,255,255,0.1) 0%, transparent 70%)`;
+    }
+
+    startAnim();
+  });
+
+  heroSection.addEventListener('mouseleave', () => {
+    isHovered = false;
+    targetX = BASE_X;
+    targetY = BASE_Y;
+    if (matGlare) {
+      matGlare.style.background =
+        'radial-gradient(ellipse 60% 40% at 30% 25%, rgba(255,255,255,0.08) 0%, transparent 70%)';
+    }
+    startAnim();
+  });
+
+  // 터치 지원 (모바일)
+  heroSection.addEventListener('touchmove', (e) => {
+    const touch = e.touches[0];
+    const rect = heroSection.getBoundingClientRect();
+    const nx = (touch.clientX - rect.left) / rect.width  * 2 - 1;
+    const ny = (touch.clientY - rect.top)  / rect.height * 2 - 1;
+    targetY = BASE_Y + nx * MAX_TILT;
+    targetX = BASE_X - ny * MAX_TILT * 0.7;
+    startAnim();
+  }, { passive: true });
+}
+
 // ===== HEADER SCROLL =====
 const header = document.getElementById('header');
 
