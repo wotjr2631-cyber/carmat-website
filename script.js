@@ -46,12 +46,12 @@ document.querySelectorAll('#hero .fade-up').forEach((el, i) => {
 
 // ===== COUNTER ANIMATION =====
 function animateCounter(el, target, duration) {
-  const isYear = target === 2005;
-  const start = isYear ? 1990 : 0;
+  const isYear = target === 2016;
+  const start = isYear ? 2000 : 0;
   const startTime = performance.now();
 
   const formatNum = (n) => {
-    if (target === 500000) return n.toLocaleString('ko-KR');
+    if (target === 350000 || target === 1200) return n.toLocaleString('ko-KR');
     return n.toString();
   };
 
